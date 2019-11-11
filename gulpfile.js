@@ -103,8 +103,6 @@ const paths = {
  * Creates the `public` folder from unzipping the latest Wordpress release
  */
 
-gulp.task('install', ['download', 'unzip', 'rename', 'delete']);
-
 /**
  * Downloads the latest Wordpress release
  */
@@ -112,12 +110,11 @@ gulp.task('install', ['download', 'unzip', 'rename', 'delete']);
 gulp.task('download', function() {
   return download(config.latestWordpressURL).pipe(gulp.dest(__dirname + '/tmp'));
 });
-
 /**
  * Unzips the latest release to the current directory
  */
 
-gulp.task('unzip', ['download'], function() {
+gulp.task('unzip', function() {
   return gulp.src(__dirname + '/tmp/latest.zip')
              .pipe(unzip())
              .pipe(gulp.dest(__dirname));
@@ -127,7 +124,7 @@ gulp.task('unzip', ['download'], function() {
  * Copies all the files in the `wordpress` folder to a `public` folder
  */
 
-gulp.task('rename', ['unzip'], function() {
+gulp.task('rename', function() {
   return gulp.src(__dirname + '/wordpress/**/*')
              .pipe(gulp.dest(__dirname + '/public'));
 });
@@ -135,13 +132,13 @@ gulp.task('rename', ['unzip'], function() {
 /**
  * Deletes the previously created `wordpress` folder
  */
-
-gulp.task('delete', ['rename'], function(callback) {
+gulp.task('delete', function(callback) {
   return del([
     __dirname + '/wordpress',
     __dirname + '/tmp'
   ], callback);
 });
+
 
 /**
  * Compiles all the javascripts files into a core.js file
