@@ -42,18 +42,21 @@ const utils = require('./utils');
  * 3°) the arguments
  */
 
-var config = _.merge({
+const config = _.merge({
   latestWordpressURL: 'https://wordpress.org/latest.zip',
   production: false,
   locals: {
     version: Date.now()
-  },
+    },
   server: {
     open: false,
     notify: false
-  },
+    },
   rename: false // rename the theme name
-}, require('./config.json'), require('yargs').argv);
+  }, 
+  require('./config.json'),
+  require('yargs').argv
+);
 
 if (_.isUndefined(config.domain) && !_.isUndefined(config.theme)) {
   config.domain = _.kebabCase(config.theme);
@@ -64,22 +67,22 @@ if (_.isUndefined(config.domain) && !_.isUndefined(config.theme)) {
  * Configuring browser-sync
  * This is obviously ugly because we don't install browser-sync in production
  */
-
+let server;
 if (config.production) {
-  var server = {
+  server = {
     stream: function() {
       return true;
     }
   };
 } else {
-  var server = require('browser-sync').create();
+  server = require('browser-sync').create();
 }
 
 /**
  * The assets paths
  */
 
-var paths = {
+const paths = {
   root: 'themes/' + config.theme,
   config: 'themes/' + config.theme + '/config.json',
   stylesheets: 'themes/' + config.theme + '/stylesheets',
@@ -147,14 +150,13 @@ gulp.task('delete', ['rename'], function(callback) {
  */
 
 gulp.task('compileJavascripts', function() {
-  var fileName = 'core.js';
-
+  const fileName = 'core.js';
   return gulp.src(paths.javascripts)
              .pipe(plumber())
              .pipe(order([ 'jquery.js' ]))
              .pipe(sourcemaps.init({loadMaps: true}))
-               .pipe(concat(fileName))
-               .pipe(gulpif(config.production, uglify({compress: false})))
+             .pipe(concat(fileName))
+             .pipe(gulpif(config.production, uglify({compress: false})))
              .pipe(sourcemaps.write('./'))
              .pipe(gulp.dest(paths.destination))
              .pipe(gulpif(!config.production, server.stream()));
@@ -167,11 +169,11 @@ gulp.task('compileJavascripts', function() {
  */
 
 gulp.task('compileStylesheets', function() {
-  var configPath = __dirname + '/' + paths.config;
-  var themeMeta = false;
+  const configPath = __dirname + '/' + paths.config;
+  let themeMeta = false;
 
   if (hasFile(configPath)) {
-    var json = require(configPath);
+    const json = require(configPath);
 
     if (_.isUndefined(json['text-domain'])) {
       json['text-domain'] = config.domain;
@@ -208,13 +210,13 @@ gulp.task('compileTemplates', function() {
  */
 
 gulp.task('compilePOT', ['compileTemplates'], function() {
-  var configPath = __dirname + '/' + paths.config;
-  var potConfig = {
+  const configPath = __dirname + '/' + paths.config;
+  const potConfig = {
     domain: config.domain
   };
 
   if (hasFile(configPath)) {
-    var json = require(configPath);
+    const json = require(configPath);
 
     if (!_.isUndefined(json['author-uri'])) {
       potConfig.bugReport = json['author-uri'];
