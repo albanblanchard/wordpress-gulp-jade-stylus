@@ -313,8 +313,11 @@ gulp.task('watchers', function() {
  * Starts the live-reloaded web server
  */
 
-gulp.task('live-reload', function() {
-  return server.init(config.server);
+gulp.task('live-reload', function(done) {
+  if (!!config.server && !_.isUndefined(config.server.proxy)) {
+    server.init(config.server);
+  }
+  done();
 });
 
 /**
