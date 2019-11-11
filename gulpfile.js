@@ -334,11 +334,13 @@ gulp.task('hard-clean', function(callback) {
  * Compiles then watch assets if not in production
  */
 
-gulp.task('default', ['compile'], function() {
-  if (!config.production) {
-    gulp.start('watch');
-    if (!!config.server && !_.isUndefined(config.server.proxy)) {
-      gulp.start('live-reload');
-    }
+gulp.task('launch', gulp.series(function loadTasks(done){
+  if (!hasFile(__dirname + '/public') && !config.production) {
+     gulp.series('download', 'unzip', 'rename', 'delete', 'compile', 'live-reload', 'watchers')();  
+  } else{
+    gulp.series('compile', 'live-reload', 'watchers')();
   }
-});
+  done();
+}));
+
+gulp.task('default', gulp.series('launch'));
