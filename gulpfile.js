@@ -299,13 +299,15 @@ gulp.task('compile', function() {
  * Watch all the assets
  */
 
-gulp.task('watch', function() {
-  gulp.watch([paths.stylesheets + '/**/*.styl', paths.config], ['compileStylesheets']);
-  gulp.watch([paths.templates], ['compileTemplates', 'compilePOT']);
-  gulp.watch([paths.javascripts], ['compileJavascripts']);
-  gulp.watch([paths.images], ['compileImages']);
-  gulp.watch([paths.functions], ['compileFunctions']);
-  gulp.watch([paths.languages], ['compilePO']);
+gulp.task('watchers', function() {
+  if (!config.production) {
+    gulp.watch([paths.stylesheets + '/**/*.styl', paths.config], gulp.series('compileStylesheets'));
+    gulp.watch([paths.templates], gulp.series('compileTemplates', 'compilePOT'));
+    gulp.watch([paths.javascripts], gulp.series('compileJavascripts'));
+    gulp.watch([paths.images], gulp.series('compileImages'));
+    gulp.watch([paths.functions], gulp.series('compileFunctions'));
+    gulp.watch([paths.languages], gulp.series('compilePO'));
+  }
 });
 
 /**
