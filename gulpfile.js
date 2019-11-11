@@ -1,40 +1,39 @@
-/**
- * This Gulp script generates Wordpress themes using Jade + Stylus
- *
- * TODO:
- * + Install Wordpress only if it hasn't been installed yet
- */
+/** 
+ * This Gulp script generates Wordpress themes using Jade + Stylus 
+ * + support gulp 4.0.2, node 12.13.0 LTS
+ * + Install Wordpress only if it hasn't been installed yet 
+ */ 
 
-var fs = require('fs');
-var _ = require('lodash');
+const fs = require('fs');
+const _ = require('lodash');
 
-var gulp = require('gulp');
-var download = require('gulp-download');
-var unzip = require('gulp-unzip');
-var jade = require('gulp-jade-php');
-var concat = require('gulp-concat');
-var wrap = require('gulp-wrap');
-var gulpif = require('gulp-if');
-var stylus = require('gulp-stylus');
-var uglify = require('gulp-uglify');
-var order = require('gulp-order');
-var plumber = require('gulp-plumber');
-var minifyCSS = require('gulp-clean-css');
-var imagemin = require('gulp-imagemin');
-var cache = require('gulp-cached');
-var pot = require('gulp-wp-pot');
-var sort = require('gulp-sort');
-var replace = require('gulp-replace');
-var gettext = require('gulp-gettext');
-var sourcemaps = require('gulp-sourcemaps');
+const gulp = require('gulp');
+const download = require('gulp-download');
+const unzip = require('gulp-unzip');
+const jade = require('gulp-jade-php');
+const concat = require('gulp-concat');
+const wrap = require('gulp-wrap');
+const gulpif = require('gulp-if');
+const stylus = require('gulp-stylus');
+const uglify = require('gulp-uglify');
+const order = require('gulp-order');
+const plumber = require('gulp-plumber');
+const minifyCSS = require('gulp-clean-css');
+const imagemin = require('gulp-imagemin');
+const cache = require('gulp-cached');
+const pot = require('gulp-wp-pot');
+const sort = require('gulp-sort');
+const replace = require('gulp-replace');
+const gettext = require('gulp-gettext');
+const sourcemaps = require('gulp-sourcemaps');
 
-var nib = require('nib');
-var jeet = require('jeet');
+const nib = require('nib');
+const jeet = require('jeet');
 
-var del = require('del');
+const del = require('del');
 
-var hasFile = fs.existsSync;
-var utils = require('./utils');
+const hasFile = fs.existsSync;
+const utils = require('./utils');
 
 /**
  * Configuration object, following this priority:
