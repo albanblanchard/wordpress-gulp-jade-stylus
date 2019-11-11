@@ -282,15 +282,17 @@ gulp.task('compileMisc', function() {
  * Compiles all the assets
  */
 
-gulp.task('compile', function() {
-  var tasks = ['compileTemplates', 'compileStylesheets', 'compileJavascripts', 'compileImages', 'compileFunctions', 'compilePOT', 'compilePO', 'compileMisc'];
-
-  if (!hasFile(__dirname + '/public') && !config.production) {
-    tasks.unshift('install');
-  }
-
-  return gulp.start(tasks);
-});
+gulp.task('compile', gulp.series(
+  'compileTemplates',
+  'compileStylesheets',
+  'compileJavascripts',
+  'compileImages',
+  'compileFunctions',
+  'compileTemplates',
+  'compilePOT',
+  'compilePO',
+  'compileMisc'
+));
 
 /**
  * Watch all the assets
