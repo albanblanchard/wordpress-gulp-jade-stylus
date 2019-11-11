@@ -209,7 +209,7 @@ gulp.task('compileTemplates', function() {
  * Analyzes PHP files and generates a POT file
  */
 
-gulp.task('compilePOT', ['compileTemplates'], function() {
+gulp.task('compilePOT', function() {
   const configPath = __dirname + '/' + paths.config;
   const potConfig = {
     domain: config.domain
