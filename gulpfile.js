@@ -230,8 +230,8 @@ gulp.task('compilePOT', function() {
              .pipe(sort())
              .pipe(replace('$text_domain', '"' + config.domain + '"'))
              .pipe(pot(potConfig))
-             .pipe(gulp.dest(paths.destination + '/languages'))
-             .pipe(gulp.dest(paths.root + '/languages'));
+             .pipe(gulp.dest(paths.destination + '/languages/*'))
+             .pipe(gulp.dest(paths.root + '/languages/*'));
 });
 
 /**
