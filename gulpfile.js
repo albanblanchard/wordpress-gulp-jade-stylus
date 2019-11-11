@@ -91,14 +91,13 @@ const paths = {
   templates: 'themes/' + config.theme + '/templates/**/*.jade',
   images: 'themes/' + config.theme + '/images/**/*',
   functions: 'themes/' + config.theme + '/functions.php',
-  destination: 'public/wp-content/themes/' + config.theme
+  destination: 'public/wp-content/themes/' + config.theme,
+  misc: [
+    'themes/' + config.theme + '/**/*', 
+    '!themes/' + config.theme + '/{templates,javascripts,stylesheets,languages,images}/**/*', 
+    '!themes/' + config.theme + '/{templates,javascripts,stylesheets,languages,images,config.json,functions.php}'
+  ]
 };
-
-paths.misc = [
-  '!' + paths.root + '/{templates,javascripts,stylesheets,languages,images}/**/*',
-  '!' + paths.root + '/{templates,javascripts,stylesheets,languages,images,config.json,functions.php}',
-  paths.root + '/**/*'
-];
 
 /**
  * Creates the `public` folder from unzipping the latest Wordpress release
