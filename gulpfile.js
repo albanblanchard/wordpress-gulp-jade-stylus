@@ -41,7 +41,6 @@ const utils = require('./utils');
  * 2°) the config.json file at the root
  * 3°) the arguments
  */
-
 const config = _.merge({
   latestWordpressURL: 'https://wordpress.org/latest.zip',
   production: false,
@@ -81,7 +80,6 @@ if (config.production) {
 /**
  * The assets paths
  */
-
 const paths = {
   root: 'themes/' + config.theme,
   config: 'themes/' + config.theme + '/config.json',
@@ -106,14 +104,12 @@ const paths = {
 /**
  * Downloads the latest Wordpress release
  */
-
 gulp.task('download', function() {
   return download(config.latestWordpressURL).pipe(gulp.dest(__dirname + '/tmp'));
 });
 /**
  * Unzips the latest release to the current directory
  */
-
 gulp.task('unzip', function() {
   return gulp.src(__dirname + '/tmp/latest.zip')
              .pipe(unzip())
@@ -123,7 +119,6 @@ gulp.task('unzip', function() {
 /**
  * Copies all the files in the `wordpress` folder to a `public` folder
  */
-
 gulp.task('rename', function() {
   return gulp.src(__dirname + '/wordpress/**/*')
              .pipe(gulp.dest(__dirname + '/public'));
@@ -144,7 +139,6 @@ gulp.task('delete', function(callback) {
  * Compiles all the javascripts files into a core.js file
  * If we're running this in production, minifies the file
  */
-
 gulp.task('compileJavascripts', function() {
   const fileName = 'core.js';
   return gulp.src(paths.javascripts)
@@ -163,7 +157,6 @@ gulp.task('compileJavascripts', function() {
  * Also appends the config.json file at the top of the style.css, based on the
  * css-template.txt file
  */
-
 gulp.task('compileStylesheets', function() {
   const configPath = __dirname + '/' + paths.config;
   let themeMeta = false;
@@ -192,7 +185,6 @@ gulp.task('compileStylesheets', function() {
 /**
  * Compiles Jade templates into theme directory
  */
-
 gulp.task('compileTemplates', function() {
   return gulp.src(paths.templates)
              .pipe(plumber())
@@ -204,7 +196,6 @@ gulp.task('compileTemplates', function() {
 /**
  * Analyzes PHP files and generates a POT file
  */
-
 gulp.task('compilePOT', function() {
   const configPath = __dirname + '/' + paths.config;
   const potConfig = {
@@ -233,7 +224,6 @@ gulp.task('compilePOT', function() {
 /**
  * Compiles PO files into MO files
  */
-
 gulp.task('compilePO', function() {
   return gulp.src(paths.languages)
              .pipe(gettext())
@@ -245,7 +235,6 @@ gulp.task('compilePO', function() {
 /**
  * Compress images into theme directory
  */
-
 gulp.task('compileImages', function() {
   return gulp.src(paths.images)
              .pipe(plumber())
@@ -258,7 +247,6 @@ gulp.task('compileImages', function() {
 /**
  * Add the text domain into the functions.php file and automatically reloads the page when the functions.php changes
  */
-
 gulp.task('compileFunctions', function() {
   return gulp.src(paths.functions)
              .pipe(plumber())
@@ -272,7 +260,6 @@ gulp.task('compileFunctions', function() {
  * Copy all the files in themes that are not in the
  * templates/javascripts/stylesheets folders or the config.json file
  */
-
 gulp.task('compileMisc', function() {
   return gulp.src(paths.misc)
              .pipe(gulp.dest(paths.destination));
@@ -281,14 +268,12 @@ gulp.task('compileMisc', function() {
 /**
  * Compiles all the assets
  */
-
 gulp.task('compile', gulp.series(
   'compileTemplates',
   'compileStylesheets',
   'compileJavascripts',
   'compileImages',
   'compileFunctions',
-  'compileTemplates',
   'compilePOT',
   'compilePO',
   'compileMisc'
@@ -297,14 +282,13 @@ gulp.task('compile', gulp.series(
 /**
  * Watch all the assets
  */
-
 gulp.task('watchers', function() {
   if (!config.production) {
     gulp.watch([paths.stylesheets + '/**/*.styl', paths.config], gulp.series('compileStylesheets'));
     gulp.watch([paths.templates], gulp.series('compileTemplates', 'compilePOT'));
     gulp.watch([paths.javascripts], gulp.series('compileJavascripts'));
     gulp.watch([paths.images], gulp.series('compileImages'));
-    gulp.watch([paths.functions], gulp.series('compileFunctions'));
+    gulp.watch([paths.functions], gulp.series('compileFunctions', 'compilePOT'));
     gulp.watch([paths.languages], gulp.series('compilePO'));
   }
 });
@@ -312,7 +296,6 @@ gulp.task('watchers', function() {
 /**
  * Starts the live-reloaded web server
  */
-
 gulp.task('live-reload', function(done) {
   if (!!config.server && !_.isUndefined(config.server.proxy)) {
     server.init(config.server);
@@ -323,7 +306,6 @@ gulp.task('live-reload', function(done) {
 /**
  * Cleans everything by deleting newly created folders
  */
-
 gulp.task('hard-clean', function(callback) {
   return del([
     __dirname + '/public',
@@ -335,7 +317,6 @@ gulp.task('hard-clean', function(callback) {
 /**
  * Compiles then watch assets if not in production
  */
-
 gulp.task('launch', gulp.series(function loadTasks(done){
   if (!hasFile(__dirname + '/public') && !config.production) {
      gulp.series('download', 'unzip', 'rename', 'delete', 'compile', 'live-reload', 'watchers')();  
