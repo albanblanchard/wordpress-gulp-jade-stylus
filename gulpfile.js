@@ -41,6 +41,7 @@ const utils = require('./utils');
  * 2°) the config.json file at the root
  * 3°) the arguments
  */
+
 const config = _.merge({
   latestWordpressURL: 'https://wordpress.org/latest.zip',
   production: false,
@@ -52,7 +53,7 @@ const config = _.merge({
     notify: false
     },
   rename: false // rename the theme name
-  }, 
+  },
   require('./config.json'),
   require('yargs').argv
 );
@@ -91,8 +92,8 @@ const paths = {
   functions: 'themes/' + config.theme + '/functions.php',
   destination: 'public/wp-content/themes/' + config.theme,
   misc: [
-    'themes/' + config.theme + '/**/*', 
-    '!themes/' + config.theme + '/{templates,javascripts,stylesheets,languages,images}/**/*', 
+    'themes/' + config.theme + '/**/*',
+    '!themes/' + config.theme + '/{templates,javascripts,stylesheets,languages,images}/**/*',
     '!themes/' + config.theme + '/{templates,javascripts,stylesheets,languages,images,config.json,functions.php}'
   ]
 };
@@ -110,6 +111,7 @@ gulp.task('download', function() {
 /**
  * Unzips the latest release to the current directory
  */
+
 gulp.task('unzip', function() {
   return gulp.src(__dirname + '/tmp/latest.zip')
              .pipe(unzip())
@@ -199,7 +201,8 @@ gulp.task('compileTemplates', function() {
 gulp.task('compilePOT', function() {
   const configPath = __dirname + '/' + paths.config;
   const potConfig = {
-    domain: config.domain
+    // domain: config.domain
+    domain: '$text_domain'
   };
 
   if (hasFile(configPath)) {
@@ -214,11 +217,11 @@ gulp.task('compilePOT', function() {
   }
 
   return gulp.src(paths.destination + '/**/*.php')
-             .pipe(sort())
-             .pipe(replace('$text_domain', '"' + config.domain + '"'))
+            //  .pipe(sort())
+            //  .pipe(replace('$text_domain', config.domain))
              .pipe(pot(potConfig))
-             .pipe(gulp.dest(paths.destination + '/languages/*'))
-             .pipe(gulp.dest(paths.root + '/languages/*'));
+             .pipe(gulp.dest(paths.destination + '/languages/' + config.domain + '.pot'))
+             .pipe(gulp.dest(paths.root + '/languages/' + config.domain + '.pot'));
 });
 
 /**
@@ -235,6 +238,7 @@ gulp.task('compilePO', function() {
 /**
  * Compress images into theme directory
  */
+
 gulp.task('compileImages', function() {
   return gulp.src(paths.images)
              .pipe(plumber())
@@ -247,6 +251,7 @@ gulp.task('compileImages', function() {
 /**
  * Add the text domain into the functions.php file and automatically reloads the page when the functions.php changes
  */
+
 gulp.task('compileFunctions', function() {
   return gulp.src(paths.functions)
              .pipe(plumber())
@@ -260,6 +265,7 @@ gulp.task('compileFunctions', function() {
  * Copy all the files in themes that are not in the
  * templates/javascripts/stylesheets folders or the config.json file
  */
+
 gulp.task('compileMisc', function() {
   return gulp.src(paths.misc)
              .pipe(gulp.dest(paths.destination));
@@ -268,6 +274,7 @@ gulp.task('compileMisc', function() {
 /**
  * Compiles all the assets
  */
+
 gulp.task('compile', gulp.series(
   'compileTemplates',
   'compileStylesheets',
@@ -288,7 +295,8 @@ gulp.task('watchers', function() {
     gulp.watch([paths.templates], gulp.series('compileTemplates', 'compilePOT'));
     gulp.watch([paths.javascripts], gulp.series('compileJavascripts'));
     gulp.watch([paths.images], gulp.series('compileImages'));
-    gulp.watch([paths.functions], gulp.series('compileFunctions', 'compilePOT'));
+    gulp.watch([paths.root + '/functions/**/*.php'], gulp.series('compileFunctions'));
+    gulp.watch([paths.functions], gulp.series('compilePOT'));
     gulp.watch([paths.languages], gulp.series('compilePO'));
   }
 });
@@ -307,7 +315,7 @@ gulp.task('live-reload', function(done) {
  * Cleans everything by deleting newly created folders
  */
 gulp.task('hard-clean', function(callback) {
-  return del([
+  del([
     __dirname + '/public',
     __dirname + '/wordpress',
     __dirname + '/tmp'
@@ -319,7 +327,7 @@ gulp.task('hard-clean', function(callback) {
  */
 gulp.task('launch', gulp.series(function loadTasks(done){
   if (!hasFile(__dirname + '/public') && !config.production) {
-     gulp.series('download', 'unzip', 'rename', 'delete', 'compile', 'live-reload', 'watchers')();  
+     gulp.series('download', 'unzip', 'rename', 'delete', 'compile', 'live-reload', 'watchers')();
   } else{
     gulp.series('compile', 'live-reload', 'watchers')();
   }
